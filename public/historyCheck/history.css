@@ -1,0 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;700&display=swap');
+
+@font-face{
+    src: url("../font/Roboto-Black.ttf");
+    font-family: "RobotoBlack";
+}
+
+@font-face{
+    src: url("../font/Roboto-Bold.ttf");
+    font-family: "RobotoBold";
+}
+@font-face{
+    src: url("../font/Roboto-Light.ttf");
+    font-family: "RobotoLight";
+}
+@font-face{
+    src: url("../font/Roboto-Regular.ttf");
+    font-family: "RobotoRegular";
+}
+@font-face{
+    src: url("../font/Roboto-Thin.ttf");
+    font-family: "RobotoThin";
+}
+
+*{
+    margin: 0;
+}
+
+body, html{
+    width: 100%;
+    height: 100%;
+}
+
+::-webkit-scrollbar{
+    display: none;
+}
+
+body{
+    background-color: #000851;
+    scrollbar-width: 0;
+}
+
+#refreshButton{
+    display: none;
+}
+
+#header{
+    width: 100%;
+    height: 4em;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#linksContainer{
+    height: 100%;
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+#history{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: 2em;
+    transition: all 1s;
+}
+
+#buttonSection{
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 80%;
+    position: relative;
+    margin: auto;
+    height: max-content;
+    z-index: 999;
+    height: 1.33em;
+    transition: all 300ms;
+}
+
+#viewModeContainer{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4.6em;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#filterIn{
+    position: absolute;
+    top: 2em;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 300ms;
+}
+
+#filt{
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+}
+#coinIn, #UniqueInputName{
+    border: none;
+    padding: 0 .5em;
+    height: 1.5em;
+    border-radius: .1em;
+    font-family: robotoLight;
+}
+
+#filt button{
+    height: 1.5em;
+    margin-left: .3em;
+    font-family: robotoRegular;
+    background-color: white;
+    border: none;
+    outline: none;
+    padding: 0 .5em;
+    box-sizing: border-box;
+}
+
+#filt *{
+    border-radius: .1em;
+}
+
+#coinIn:focus, #UniqueInputName:focus{
+    outline: none;
+}
+
+#coin_filter{
+    border-radius: 1em;
+    padding: .2em 2em;
+    border: none;
+    outline: none;
+    background-color: #EAEAEA;
+}
+
+.favCointainer{
+    color: white;
+    margin-top: 1em;
+}
+
+.coinText {
+    font-family: robotoBlack;
+    font-size: small;
+}
+
+.favCointainer button{
+    border: none;
+    outline: none;
+    font-family: robotoBold;
+    border-radius: .2em;
+    margin: .3em 0 .5em;
+}
+
+.coinEdit{
+    background-color: #E6FFB1;
+    padding: .2em 1em;
+}
+
+.coinDelete{
+    background-color: #FF6666;
+    padding: .2em .9em;
+}
+
+#viewMode{
+    border: none;
+    outline: none;
+    color: white;
+    background-color: transparent;
+}
+
+#downImg{
+    position: absolute;
+    left: 0;
+    height: 90%;
+    transition: transform 300ms, left 300ms 50ms;
+}
+
+#UniqueDivName{
+    height: 1.25em;
+}
+#UniqueDivName *{
+    border-radius: .1em;
+}
+
+#UniqueDivName button{
+    height: 100%;
+    font-family: robotoRegular;
+    padding: 0 .5em;
+    font-size: .7em;
+}
+
+.editSave{
+    position: relative;
+    background-color: #E6FFB1;
+    margin-left: .5em;
+}
+
+.editCancel{
+    background-color: #FF6666;
+}
+
+/* ----------------------- */
+
+.container, .merge{
+    width: 80%;
+    border-radius: .3em;
+    margin-bottom: 2em;
+    background-color: grey;
+    position: relative;
+    border: black solid .2em;
+}
+.container{
+    height: 11em;
+    font-size: .8em;
+}
+
+.merge .container{
+    width: 100%;
+    margin: 2em 0;
+    z-index: 2;
+}
+
+.buy{
+    background-color: greenyellow;
+}
+.sell{
+    background-color: red;
+}
+
+/* --------- */
+
+
+._title{
+    border-bottom: solid black .1em;
+    height: 30%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+._main{
+    display: flex;
+    align-items: center;
+    height: 70%;
+    width: 100%;
+}
+
+.sub_main_container{
+    padding-left: 1em;
+    font-size: .7em;
+    height: 90%;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    position: relative;
+}
+
+.sub_title_container{
+    width: max-content;
+    height: 80%;
+    padding-left: .7em;
+}
+
+/* -------- */
+.name{
+    font-family: robotoLight;
+}
+
+.argument{
+    font-family: robotoBold;
+}
+
+._currency{
+    font-family: robotoBlack;
+    font-size: 1.5em;
+}
+
+._pair{
+    font-family: robotoThin;
+    font-size: .8em;
+}
+
+.argument {
+    position: absolute;
+    left: 6em;
+    transform: translateY(-100%);
+}
+
+.semicolon{
+    position: absolute;
+    left: 5.5em;
+}
+
+._idr .argument::before, ._fee .argument::before{
+    content: "Rp";
+} 
+
+/* ------ */
+
+.sub_id{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    position: absolute;
+    right: 1em;
+}
+
+.id_pCont{
+    font-family: robotoThin;
+    font-size: .8em;
+}
+
+/* ------ */
+
+.mergeSuper{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2.5em;
+}
+
+.merge_container{
+    margin-bottom: 0;
+}
+
+.mergeSuper details{
+    width: 80%;
+    margin-top: .2em;
+    margin-bottom: .5em;
+}
+
+.merged_trade{
+    font-family: robotoBold;
+}
+
+.mergeSuper details summary{
+    color: white;
+    font-family: robotoLight;
+    font-size: small;
+}
+
+.mergeSuper details .container{
+    width: 90%;
+    margin: .5em auto;
+}

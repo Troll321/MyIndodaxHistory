@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;700&display=swap');
+
+        @font-face{
+            src: url("../font/Roboto-Black.ttf");
+            font-family: "RobotoBlack";
+        }
+
+        @font-face{
+            src: url("../font/Roboto-Bold.ttf");
+            font-family: "RobotoBold";
+        }
+        @font-face{
+            src: url("../font/Roboto-Light.ttf");
+            font-family: "RobotoLight";
+        }
+        @font-face{
+            src: url("../font/Roboto-Regular.ttf");
+            font-family: "RobotoRegular";
+        }
+        @font-face{
+            src: url("../font/Roboto-Thin.ttf");
+            font-family: "RobotoThin";
+        }
+
+        *{
+            margin: 0;
+            
+        }
+
+        body, html{
+            width: 100%;
+            height: 100%;
+        }
+
+        ::-webkit-scrollbar{
+            display: none;
+        }
+
+        body{
+            background-color: #000851;
+            scrollbar-width: 0;
+        }
+        a{
+            text-decoration: none;
+            color: white;
+            font-family: 'Roboto Condensed', sans-serif;
+            transition: all 300ms;
+        }
+
+        a:hover{
+            color: #CECECE;
+        }
+
+        #linksContainer a{
+            transition: all 300ms;
+        }
+
+        #linksContainer a:hover{
+            color: #CECECE;
+        }
+
+        #test_link, #history_link{
+            font-weight: 300;
+        }
+
+        #home_link{
+            font-weight: 700;
+        }
+
+
+        header{
+            width: 70%;
+            height: 4em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #LoginForm{
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #container{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            width: 70%;
+            height: 100%;
+        }
+
+        #LoginForm *{
+            font-family: robotoBold;
+        }
+        #api, #secret{
+            position: absolute;
+            right: 0;
+            font-family: robotoLight;
+            width: 60%;
+        }
+
+        #apiDiv, #secretDiv{
+            position: relative;
+            width: 100%;
+        }
+
+        #apiLabel, #secretLabel{
+            font-size: 4vw;
+        }
+
+
+        #secretDiv{
+            margin-top: .4em;    
+        }
+        #submitButton{
+            margin-top: 1em;
+            background-color: white;
+            padding: .3em 1em;
+        }
+        #submitButton, #api, #secret, #deleteButton{
+            border-radius: .2em;
+            border: none;
+            outline: none;
+            padding: .3em .5em;
+        }
+        #deleteButton{
+            background-color: tomato;
+            margin: 1em 0 1em 14%;
+            padding: .3em 1em;
+            font-family: robotoBold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a id="test_link" href="/test">Test</a>
+        <a id="home_link" href="/">Home</a>
+        <a id="history_link" href="/history">History</a>
+    </header>
+
+    <button id="deleteButton" onclick="deleteKey()">Delete Saved Credential</button>
+
+    <script>
+        const template = `
+        <div id="container">
+            <div id="apiDiv">
+                <label id="apiLabel" form="LoginForm" for="api">Api key</label>
+                <input form="LoginForm" type="password" name="api" id="api">
+            </div>
+            <div id="secretDiv">
+                <label id="secretLabel" form="LoginForm" for="secret">Secret key</label>
+                <input form="LoginForm" type="password" name="secret" id="secret">
+            </div>
+            <input id="submitButton" form="LoginForm" type="submit">
+        </div>
+        `
+        const apiStrg = "WiobgjCHewwfQECNdfArEsdfWUsH";
+        const secretStrg = "NHCOiwQUIisumSWcwswHHss2YywdwSdyrfnh";
+        const validationRegex = /[\"\,\.\'\<\>\=\;\.\!\`\\\/\(\)\{\}\[\]]/i;
+        function validate(data) {
+            if(validationRegex.test(data)){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function setKey() {
+            const api = localStorage.getItem(apiStrg);
+            const secret = localStorage.getItem(secretStrg);
+            if (api == null || secret == null) {
+                document.getElementById("test_link").style.display = "none";
+                document.getElementById("history_link").style.display = "none";
+
+                const de = document.getElementById("LoginForm");
+                if (de) {
+                    return ;
+                } else{
+                    const form = document.createElement("form");
+                    form.action = "/login";
+                    form.method = "POST";
+                    form.target = "_blank";
+                    form.id = "LoginForm";
+                    form.addEventListener("submit", (e)=>{
+                        e.preventDefault();
+                        const api_ = document.getElementById("api").value;
+                        const secret_ = document.getElementById("secret").value;
+                        if (api_ && secret_ && api_ != "" && secret_ != "" && validate(api_) == false && validate(secret_) == false) {
+                            localStorage.setItem(apiStrg, api_);
+                            localStorage.setItem(secretStrg, secret_);
+
+                            form.remove();
+                            makeRequest(api_, secret_);
+                            document.getElementById("test_link").style.display = "block";
+                            document.getElementById("history_link").style.display = "block";
+                        }
+                    });
+                    form.innerHTML = template;
+                    document.body.appendChild(form);
+                }
+            } else {
+                makeRequest(api, secret);
+            }    
+        }
+        
+        function makeRequest(api, secret) {
+            const baseURL = "/login";
+            const x = new XMLHttpRequest();
+            x.open("POST", baseURL);
+            x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            x.send(`api=${api}&secret=${secret}`);
+        }
+
+
+        function deleteKey() {
+            localStorage.removeItem(apiStrg);
+            localStorage.removeItem(secretStrg);
+            setKey();
+        }
+        setKey();
+    </script>
+</body>
+</html>

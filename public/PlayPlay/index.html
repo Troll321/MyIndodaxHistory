@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Indodax Trade Api</title>
+        <style>
+            *::-webkit-scrollbar {
+                display: none;
+            }
+            *{
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+                margin: 0;
+                padding: 0;
+                text-align: center;
+            }
+            body, html {
+                height: 100%;
+                width: 100%;
+            }
+            form{
+                display: block;
+                width: max-content;
+                height: max-content;
+            }
+            form, form *{
+                margin: 0 auto 10px;
+                position: relative;
+                width: max-content;
+                height: max-content;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            #main_bt{
+                background-color: rgb(64, 217, 255);
+                border: none;
+                box-shadow: rgba(0, 0, 0, 0.219) 3px 3px 5px;
+                width: 100px;
+                border-radius: 5px;
+                height: 40px;
+                display: block;
+                top: 120px;
+            }
+            #main_bt:hover{
+                background-color: rgb(81, 196, 224);
+                transition: all 300ms;
+            }
+            #choices{
+                display: block;
+                position: absolute;
+                height: 200px;
+                width: 0;
+                overflow: scroll;
+                z-index: 100;
+                background-color: rgb(118, 173, 255);
+                padding: none;
+                margin: 0;
+                box-sizing: border-box;
+                border: none;
+                border-radius: 5px;
+                top: 20px;
+                transition: all 300ms;
+                box-shadow: rgba(36, 36, 36, 0.651) 0 10px 4px -4px;
+            }
+            #methodind{
+                display: flex;
+                justify-content: center;
+            }
+            #method{
+                z-index: 101;
+                display: block;
+                border: none;
+                background-color: rgb(118, 173, 255);
+                border-radius: 5px;
+                height: 40px;
+                width: 150px;
+                line-height: 40px;
+            }
+            #method:focus {
+                outline: none;
+            }
+            #label{
+                border-radius: 2px;
+                padding: 5px 15px 10px;
+                margin: auto;
+                display: block;
+            }
+            #choices p:hover{color: white;}
+            #choices p{
+                display: inline-block;
+                width: 100%;
+                padding: 10px 0;
+                position: relative;
+                top: 20px;
+                margin: 0;
+            }
+            .left input, .right input{
+                display: block;
+                margin: 10px;
+                height: 20px;
+            }
+            input{
+                display: block;
+                margin: 10px auto;
+                height: 20px;
+            }
+            label{
+                display: block;
+            }
+            #inputdiv{
+                display: block;
+                top: 100px;
+            }
+            .left{
+                float: left;
+            }
+            .right{
+                float: right;
+            }
+            #inputdiv div{
+                padding-bottom: 10px;
+                border-radius: 5px;
+            }
+            button{
+                top: 10px;
+            }
+            /* a{
+                display: block;
+                position: fixed;
+                left: 10px;
+                top: 10px;
+                z-index: 200;
+            } */
+        </style>
+    </head>
+    <body>
+        <a id="test_link" href="/test">Test</a>
+        <a id="history_link" href="/history">History</a>
+        <a id="home_link" href="/">Home</a>
+        <a target="_blank" href="https://indodax.com/downloads/INDODAXCOM-API-DOCUMENTATION.pdf">Official Indodax Trade API Docs</a>
+        <form method="POST" autocomplete="off" action="/api" target="_blank" id="form1">
+            <h2 id="label">Method</h2>
+            <div id="methodind">
+                <div id="method"></div>
+                <input id="method2" style="display: none;" autocomplete="false" form="form1" name="method" type="text">
+                <div id="choices">
+                    <p id="getInfo" onclick="handler('getInfo')">getInfo</p>
+                    <p id="transHistory" onclick="handler('transHistory')">transHistory</p>
+                    <p id="trade" style="background-color: rgb(47, 120, 255);" onclick="handler('trade')">trade</p>
+                    <p id="tradeHistory" style="background-color: coral;" onclick="handler('tradeHistory')">tradeHistory</p>
+                    <p id="openOrders" style="background-color: rgb(36, 255, 237);" onclick="handler('openOrders')">openOrders</p>
+                    <p id="orderHistory" style="background-color: rgb(49, 207, 255);" onclick="handler('orderHistory')">orderHistory</p>
+                    <p id="getOrder" style="background-color: darkgrey;" onclick="handler('getOrder')">getOrder</p>
+                    <p id="cancelOrder" style="background-color: violet;" onclick="handler('cancelOrder')">cancelOrder</p>
+                    <p id="withdrawCoin" style="background-color: grey;" onclick="handler('withdrawCoin')">withdrawCoin</p>
+                </div>
+            </div> 
+            <div id="inputdiv">
+                <div id="pair" style="background-image: linear-gradient(to right,rgb(172, 245, 255) 0 16%, coral 16% 32%, violet 32% 48%, rgb(49, 207, 255) 48% 64%, darkgrey 64% 80%, rgb(36, 255, 237) 80% 100%); padding: 20px;">
+                    <label><h2>pair</h2></label>
+                    <input style="height: 30px;margin: 10px auto;" name="pair">
+                </div>
+                <div class="left" style="background-color: rgb(47, 120, 255);">
+                    <div style="background-image: linear-gradient(to right, rgb(172, 245, 255) 50%, violet 50%);">
+                        <label>type</label>
+                        <input name="type">
+                    </div>
+                    <label>price</label>
+                    <input name="price">
+                    <label>idr</label>
+                    <input name="idr">
+                    <label>btc</label>
+                    <input name="btc">
+
+                    <label>request_id</label>
+                    <input name="request_id">
+                </div>
+                <div class="right">
+                    <div style="background-image: linear-gradient(to right, coral 50%, rgb(49, 207, 255) 50%);">
+                        <label><b>count</b></label>
+                        <input name="count">
+                    </div>
+                    <div style="background-color: coral;">
+                        <label>from_id</label>
+                        <input name="from_id">
+                        <label>end_id</label>
+                        <input name="end_id">
+                        <label>order</label>
+                        <input name="order">
+                        <label>since</label>
+                        <input name="since">
+                        <label>end</label>
+                        <input name="end">
+                    </div>
+                    <div style="background-color: rgb(49, 207, 255);border-radius:5px">
+                        <label>from</label>
+                        <input name="from">
+                    </div>
+                    <div style="background-image: linear-gradient(to right, darkgrey 50%, violet 50%);margin: 0;">
+                        <label>order_id</label>
+                        <input name="order_id"> 
+                    </div>
+                </div>
+                <div class="left" style="background-color: grey;border-top-right-radius: 0;border-bottom-right-radius: 0;" >
+                    <label>currency</label>
+                    <input name="currency">
+                    <label>withdraw_addres</label>
+                    <input name="withdraw_addres">
+                </div>
+                <div class="right" style="background-color: grey;border-top-left-radius: 0;border-bottom-left-radius: 0">
+                    <label>withdraw_amount</label>
+                    <input name="withdraw_amount">
+                    <label>withdraw_memo</label>
+                    <input name="withdraw_memo">
+                </div>
+            </div>
+            <button id="main_bt" type="submit" value="post" form="form1">Post request</button>
+        </form>
+        <script>
+            const input_val = document.getElementById("method2");
+            const choices = document.getElementById("choices").style;
+            const input = document.getElementById("method");
+            const method = ["getInfo", "transHistory", "trade", "tradeHistory", "openOrders", "getOrder", "cancelOrder", "withdrawCoin"];
+            var out=false, click=false;
+            input.addEventListener("pointerdown", ()=>{
+                choices.height = "200px";
+                choices.width = "150px";
+            });
+            input.addEventListener("pointerover", ()=>{
+                out = false;
+            })
+            input.addEventListener("pointerleave", ()=>{
+                out=true;
+            });
+            window.addEventListener("click",()=>{
+                click=true;
+                if (click == true && out == true) {
+                    choices.height = "0";
+                    choices.width = "0";
+                }
+            });
+            function handler(name){
+                const p = document.getElementById(name);
+                input.style.backgroundColor = p.style.backgroundColor;
+                input.innerHTML = name;
+                input_val.value = name;
+            };
+            const api = localStorage.getItem("WiobgjCHewwfQECNdfArEsdfWUsH");
+            const secret = localStorage.getItem("NHCOiwQUIisumSWcwswHHss2YywdwSdyrfnh");
+            if (api && secret) {
+                var inp = document.createElement("input");
+                inp.value = api;
+                inp.style.display = "none";
+                inp.name = "api";
+                document.getElementById("form1").appendChild(inp);
+                var inp = document.createElement("input");
+                inp.value = secret;
+                inp.style.display = "none";
+                inp.name = "secret";
+                document.getElementById("form1").appendChild(inp);
+            }
+        </script>
+    </body>
+</html>

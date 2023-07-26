@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <script src="../container.js"></script>
+    <link rel="stylesheet" href="historyCheck/history.css">
+    <style>
+        a{
+            text-decoration: none;
+            color: white;
+        }
+        #linksContainer a{
+            transition: all 300ms;
+        }
+
+        #linksContainer a:hover{
+            color: #CECECE;
+        }
+
+        #test_link, #home_link{
+            font-weight: 300;
+        }
+
+        #history_link{
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <template id="historyTemplate">
+        <div class="container">
+            <div class="_title">
+                <h1 class="_currency"></h1>
+                <h3 class="_pair"></h3>
+            </div>
+            <div class="_main">
+                <h1 class="_type"></h1>
+                <p class="_idr"></p>
+                <p class="_curr_"></p>
+                <p class="_fee"></p>
+            </div>
+            <div class="_footer">
+                <p class="_trade_time"></p>
+                <p class="_order_id"></p>
+            </div>
+        </div>
+    </template>
+    <template id="mergeTemplate">
+        <div class="mergeContainer">
+            <div class="merge_title">
+                <h1 class="merge_currency"></h1>
+                <h3 class="merge_pair"></h3>
+            </div>
+            <div class="merge_main">
+                <h1 class="merge_type"></h1>
+                <p class="merge_idr"></p>
+                <p class="merge_curr_"></p>
+                <p class="merge_fee"></p>
+            </div>
+            <div class="merge_footer">
+                <p class="merge_trade_time"></p>
+                <p class="merge_order_id"></p>
+            </div>
+        </div>
+    </template>
+    <header id="header">
+        <div id="linksContainer">
+            <a id="test_link" href="/test">Test</a>
+            <a id="home_link" href="/">Home</a>
+
+            <a id="history_link" href="/history">History</a>
+        </div>
+    </header>
+    <div id="buttonSection">
+        <div id="topBttSec">
+            <button id="coin_filter" onclick="filter(false)">Filter</button>
+            <div id="viewModeContainer">
+                <img id="downImg" src="../image/down.svg" alt="down">
+                <button id="viewMode" onclick="viewMode()">Latest</button>
+            </div>
+        </div>
+        <div id="filterIn" style="visibility: hidden; opacity: 0;">
+            <div id="filt">
+                <input id="coinIn" type="text" >
+                <button type="submit" onclick="add()">Add</button>
+            </div>
+            <div id="coinSelectorGUI">
+
+            </div>
+        </div>
+        <button onclick="historyRefresh()" id="refreshButton"><h1>REFRESH</h1></button>
+    </div>
+    <div id="history" style="flex-direction: column-reverse;"></div>
+    <!-- -------------------- -->
+    <script>
+        const validationRegex = /[\"\,\.\'\<\>\=\;\.\!\`\\\/\(\)\{\}\[\]]/i;
+        function validate(data) {
+            if(validationRegex.test(data)){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        const api = localStorage.getItem("WiobgjCHewwfQECNdfArEsdfWUsH");
+        const secret = localStorage.getItem("NHCOiwQUIisumSWcwswHHss2YywdwSdyrfnh");
+
+        function upper(string) {
+            var arr = string.split("");
+            arr[0] = arr[0].toUpperCase();
+            return arr.join("");
+        }
+
+        function float(data) {
+            var a = parseFloat(data.split(",").join(""));
+            return a;
+        }
+
+        function findIndexArray(array, id) {
+            const nArr = array.indexOf(id);
+            return nArr;
+        }
+
+        function getFavArray() {
+            const favcoinRaw = localStorage.getItem("Favourite Coin");
+            if (favcoinRaw) {
+                return favcoinRaw.split(",");
+            }
+            return null;
+        }
+
+        function coma(num) {
+            var ber = num;
+            if (typeof num != "string") {
+                ber = num.toString();
+            }
+            ber = ber.split(".");
+            var ber1 = ber[0], ber2 = ber[1];
+            ber1 = ber1.split("");
+            var y;
+            if (ber1.length % 3 == 0) {
+                y = ber1[0];
+            }
+            ber1.forEach((data, index) => {
+                if ((index+1) % 3 == 0) {
+                    var i = ber1.length - (index+1);
+                    ber1[i] = "," + ber1[i];
+                }
+            });
+            if (ber2 != undefined) {
+                ber2 = ber2.split("");
+                ber2[0] = "." + ber2[0];
+                if (y) {
+                    ber1[0] = y;
+                }
+                const output = ber1.join("") + ber2.join("");
+                return output;
+                
+            } else {
+                if (y) {
+                    ber1[0] = y;
+                }
+                const output = ber1.join("");
+                return output;
+                
+            }
+        }
+        function unixToTime(time) {
+            var intT = parseInt(time) * 1000, myDate = new Date(intT), rawDate = myDate.toLocaleString("id-ID", {dateStyle: "full", timeStyle: "short", hourCycle: "h24"}),
+            index = rawDate.indexOf(".");
+            return rawDate;
+        }
+        function O(num) {
+            if (num.split("").length != 2) {
+                num = "0" + num;
+            }
+            return num;
+        }
+    </script>
+    <script>
+    document.getElementById("coinIn").addEventListener("keypress", (e)=>{
+        if (e.isTrusted == true && e.key == "Enter"){
+            add();
+        }
+    })
+
+    function viewMode() {
+        const {style} = document.getElementById("history");
+        var x = document.getElementById("viewMode"), img = document.getElementById("downImg").style;
+        if(x.innerHTML == "Latest"){
+            style.flexDirection = "column";
+            x.innerHTML = "Earliest";
+            img.transform = "rotateZ(180deg)";
+            img.left = "-.5em";
+        } else {
+            style.flexDirection = "column-reverse";
+            x.innerHTML = "Latest";
+            img.transform = "rotateZ(0deg)";
+            img.left = "0";
+        }
+    }
+
+    function add() {
+        var arr = getFavArray();
+        var { value } = document.getElementById("coinIn");
+        if (validate(value)) {
+            document.getElementById("coinIn").value = "";
+            alert("Cant contain \"\,\.\'\<\>\=\;\.\!\`\\\/\(\)\{\}\[\]")
+            return ;
+        }
+        const regex = /_idr/i;
+        const regex2 = /_usdt/i;
+        var outputValue = value;
+        if (outputValue == "" || outputValue == "null" || outputValue == "undefined") {
+            return ;
+        }
+        if (regex.test(value) == false && regex2.test(value) == false) {
+            outputValue += "_idr";
+        }
+        outputValue = outputValue.toLowerCase();
+        if(arr == null){
+            localStorage.setItem("Favourite Coin", outputValue);
+            displayCoinGUI(outputValue);
+        } else {
+            if (arr.includes(outputValue)) {
+                document.getElementById("coinIn").value = "";
+                return ;
+            }
+            arr.push(outputValue);
+            localStorage.setItem("Favourite Coin", arr);
+            displayCoinGUI(outputValue);
+        }
+        document.getElementById("coinIn").value = "";
+        filter(true);
+    }
+
+    function filter(isit) {
+        const elem2 = document.getElementById("coinSelectorGUI"), elem3 = document.getElementById("buttonSection").style, {bottom} = elem2.getBoundingClientRect()
+        ,elem = document.getElementById("filterIn"), s = elem.style;
+        if (s.opacity != "0" && isit == false) {
+            // Normal
+            s.opacity = "0";
+            s.visibility = "hidden";
+            elem3.height = "1.33em";
+        } else if (s.opacity == "0" || isit == true) {
+            // Abnormal
+            s.opacity = "1";
+            s.visibility = "visible";
+            elem3.height = bottom-50 + "px";
+        }
+    }
+
+    function editCoin(id) {
+        if (document.getElementById("UniqueDivName") && document.getElementById(id).innerHTML.includes("UniqueDivName")){
+            editSave(id);
+            return ;
+        } else if(document.getElementById("UniqueDivName")) {
+            editCancel();
+        }
+
+        const elemenet = document.getElementById(id);
+        const inElem = document.createElement("div");
+        const template2 = `
+        <input onkeypress="editSaveE(event, '${id}')" id="UniqueInputName" type="text" value="${document.getElementById(id + "Text").innerText}">
+        <button class="editSave" onclick="editSave('${id}')">Save</button>
+        <button class="editCancel" onclick="editCancel()">Cancel</button>
+        `
+        inElem.id = "UniqueDivName";
+        inElem.innerHTML = template2;
+        elemenet.appendChild(inElem);
+        filter(true);
+    }
+    function editCancel() {
+        document.getElementById("UniqueDivName").remove();
+        filter(true);
+    }
+
+    function editSave(id) {
+        const input = document.getElementById("UniqueInputName");
+        var { value } = input;
+        if (validate(value)) {
+            alert("Cant contain \"\,\.\'\<\>\=\;\.\!\`\\\/\(\)\{\}\[\]")
+            return ;
+        }
+        if (value == "" || value == "null" || value == "undefined") {
+            return ;
+        }
+        if (validate(value)) {
+            document.getElementById("coinIn").value = "";
+            alert("Cant contain \"\,\.\'\<\>\=\;\.\!\`\\\/\(\)\{\}\[\]")
+            return ;
+        }
+        const regex = /_idr/i;
+        const regex2 = /_usdt/i;
+        if (regex.test(value) == false && regex2.test(value) == false) {
+            value += "_idr";
+        }
+        value = value.toLowerCase();
+        const elem = document.getElementById(id);
+        var favoriteCoinArray_ = getFavArray();
+        const template1 = `
+        <p class="coinText" id="${value}Text">${value}</p>
+        <button class="coinEdit" onclick="editCoin('${value}')">Edit</button>
+        <button  class="coinDelete" onclick="deleteCoin('${value}')">Delete</button>
+        `
+        elem.id = value;
+        elem.innerHTML = template1;
+        const index = findIndexArray(favoriteCoinArray_, id);
+        favoriteCoinArray_.splice(index, 1, value);
+        localStorage.setItem("Favourite Coin", favoriteCoinArray_);
+        filter(true);
+    }
+
+    function editSaveE(e, id){
+        if (e.isTrusted == true && e.key == "Enter"){
+            editSave(id);
+        }
+    }
+
+    function displayCoinGUI(dt) {
+        const template1 = `
+        <p class="coinText" id="${dt}Text">${dt}</p>
+        <button class="coinEdit" onclick="editCoin('${dt}')">Edit</button>
+        <button class="coinDelete" onclick="deleteCoin('${dt}')">Delete</button>
+        `
+        const elementMwaha = document.createElement("div");
+        elementMwaha.classList.add("favCointainer");
+        elementMwaha.id = dt;
+        elementMwaha.innerHTML = template1;
+        document.getElementById("coinSelectorGUI").appendChild(elementMwaha);
+    }
+
+    function deleteCoin(id) {
+        var __favoriteCoinArray = getFavArray();
+        var index = findIndexArray(__favoriteCoinArray, id);
+        __favoriteCoinArray.splice(index, 1);
+        localStorage.setItem("Favourite Coin", __favoriteCoinArray);
+        const element = document.getElementById(id);
+        element.remove();
+        filter(true);
+    }
+
+
+// --------------------------------- //
+
+    var HISTORYARRRAY = [];
+    var favoriteCoinArray = getFavArray();
+    if (favoriteCoinArray != null || favoriteCoinArray != undefined) {
+        favoriteCoinArray.forEach((dt)=>{
+            displayCoinGUI(dt);
+        });
+    }
+
+    function historyCheckPre() {
+        const arr = getFavArray();
+        if (arr && api && secret && validate(api) == false && validate(secret) == false) {
+            var count = 0;
+            state = "normal";
+            var interval = setInterval(() => {
+                count++;
+                if (count == arr.length) {
+                    historyCheck(arr[count-1], true);
+                    clearInterval(interval);
+                } else{
+                    historyCheck(arr[count-1], false);
+                }
+            }, 500);
+        }
+    }
+
+    function historyCheck(pair, isLast) {
+        const api = localStorage.getItem("WiobgjCHewwfQECNdfArEsdfWUsH");
+        const secret = localStorage.getItem("NHCOiwQUIisumSWcwswHHss2YywdwSdyrfnh");
+        if (api && secret) {
+            const baseURL = "/history"; 
+            const x = new XMLHttpRequest();
+            x.onload = function () {
+                const json = JSON.parse(this.responseText);
+                for (let l = 0; l < json.length; l++) {
+                    HISTORYARRRAY.push(json[l]);
+                    var x = document.getElementById("historyTemplate").content.cloneNode(true);
+                    document.getElementById("history").appendChild(x);
+                }
+                if (isLast == true) {
+                    historyProcess();
+                }
+            }
+            x.open("POST", baseURL);
+            x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            x.send(`method=tradeHistory&pair=${pair}&api=${api}&secret=${secret}`);
+        }
+    }
+
+    function historyRefresh() {
+        document.getElementById("history").innerHTML = "";
+        HISTORYARRRAY = [];
+        state = "refresh";
+        historyCheckPre();
+    }
+
+    function historyProcess() {
+        var c = document.getElementsByClassName("container");
+        for (let l = 0; l < c.length; l++) {
+            const element = c[l];
+            const data = HISTORYARRRAY[l];
+            var { currency, pair, type, price, type, fee, order_id, trade_id, trade_time} = data;
+            var curr_ = data[currency];
+            element.classList.add(type);
+            element.classList.add(order_id);
+            element.style.order = trade_time;
+            element.innerHTML = `
+            <div class="_title">
+                <div class="sub_title_container">
+                    <h1 class="_currency">${currency.toUpperCase()}</h1>
+                    <h3 class="_pair">${pair}</h3>
+                </div>
+                <div class="sub_id">
+                    <p class="id_pCont _order_id"><span class="id_name">Order<span class="id_semicolon">:</span> </span><span class="id_argument order_argument">${order_id}</span></p>
+                    <p class="id_pCont _trade_id"><span class="id_name">Trade<span class="id_semicolon">:</span> </span><span class="id_argument">${trade_id}</span></p>
+                </div>
+            </div>
+            <div class="_main">
+                <div class="sub_main_container">
+                    <p class="_type"><span class="name">Type</span><span class="semicolon">:</span> <span class="argument">${type}</span></p>
+                    <p class="_price"><span class="name">Price</span><span class="semicolon">:</span> <span class="argument">${coma(Math.floor(price))}</span></p>
+                    <p class="_idr"><span class="name">Idr</span><span class="semicolon">:</span> <span class="argument">${coma(Math.floor(curr_ * price))}</span></p>
+                    <p class="_curr_"><span class="name">${upper(currency)}</span><span class="semicolon">:</span> <span class="argument">${coma(curr_)}</span></p>
+                    <p class="_fee"><span class="name">Fee</span><span class="semicolon">:</span> <span class="argument">${coma(fee)}</span></p>
+                    <p class="_trade_time"><span class="name">Time</span><span class="semicolon">:</span> <span class="argument">${unixToTime(trade_time)}</span></p>
+                </div>
+            </div>
+            `;
+        }
+        mergeHistory();
+    }
+
+    function mergeHistory() {
+        var c = document.getElementsByClassName("order_argument");
+        var prev = "";
+        var ORDERARRAY = "";
+
+        for (let l = 0; l < c.length; l++) {
+            const inner = c[l].innerHTML;
+            var regex = new RegExp(inner, "i");
+            if (prev == inner && regex.test(ORDERARRAY) == false) {
+                ORDERARRAY += inner + ",";
+            }
+            prev = inner;
+        }
+        ORDERARRAY = ORDERARRAY.split(",");
+        ORDERARRAY.pop();
+        while (ORDERARRAY.length != 0) {
+            var q = document.getElementsByClassName(ORDERARRAY[0]);
+            const length = q.length;
+            var g = q[length-1].innerText.split("\n");
+            var order = q[length-1].style.order;
+            // totalPrice = float(g[13]),
+            // idr = float(g[17]),
+            // curr_ = float(g[21]),
+            // fee = float(g[25]),
+            // _outerHTML = "",
+            // currency = g[0],
+            // pair = g[1],
+            // type = g[9],
+            // lastTradeTime = g[29];
+
+            var totalPrice = float(g[5].split(" ")[1]),
+            idr = float(g[6].split(" ")[1]),
+            curr_ = float(g[7].split(" ")[1]),
+            fee = float(g[8].split(" ")[1]),
+            _outerHTML = "",
+            currency = g[0],
+            pair = g[1],
+            type = g[4].split(" ")[1];
+            var lastTradeTime = g[9].split(" ");
+            lastTradeTime.shift();
+            lastTradeTime = lastTradeTime.join(" ");
+
+            for (let l = 0; l < length-1; l++) {
+                var arr = q[l].innerText.split("\n");
+
+                totalPrice += float(arr[5].split(" ")[1]),
+                idr += float(arr[6].split(" ")[1]),
+                curr_ += float(arr[7].split(" ")[1]),
+                fee += float(arr[8].split(" ")[1]),
+                _outerHTML += q[l].outerHTML;
+            }
+            _outerHTML += q[length-1].outerHTML;
+
+            for (let i = 1; i < length; i++) {
+                q[1].remove();
+            }
+
+            averagePrice = totalPrice / length;
+            q[0].outerHTML = 
+            `<div class="mergeSuper" style="order: ${order}">
+                <div class="merge_container container ${type}">
+                    <div class="_title">
+                        <div class="sub_title_container">
+                            <h1 class="_currency">${currency}</h1>
+                            <h3 class="_pair">${pair}</h3>
+                        </div>
+                        <div class="sub_id">
+                            <p class="id_pCont _order_id"><span class="id_name">Order<span class="id_semicolon">:</span> </span><span class="id_argument order_argument">${ORDERARRAY[0]}</span></p>
+                            <p class="id_pCont merged_trade"><span class="id_name">Merged Trade<span class="id_semicolon">:</span> </span><span class="id_argument">${length}</span></p>
+                        </div>
+                    </div>
+                    <div class="_main">
+                        <div class="sub_main_container">
+                            <p class="_type"><span class="name">Type</span><span class="semicolon">:</span> <span class="argument">${type}</span></p>
+                            <p class="_price"><span class="name">Price</span><span class="semicolon">:</span> <span class="argument">${coma(averagePrice)}</span></p>
+                            <p class="_idr"><span class="name">Idr</span><span class="semicolon">:</span> <span class="argument">${coma((idr))}</span></p>
+                            <p class="_curr_"><span class="name">${upper(currency.toLowerCase())}</span><span class="semicolon">:</span> <span class="argument">${coma(curr_)}</span></p>
+                            <p class="_fee"><span class="name">Fee</span><span class="semicolon">:</span> <span class="argument">${coma(fee)}</span></p>
+                            <p class="_trade_time"><span class="name">Time</span><span class="semicolon">:</span> <span class="argument">${lastTradeTime}</span></p>
+                        </div>
+                    </div>
+                </div>
+                <details>
+                    <summary>Expand</summary>
+                    ${_outerHTML}
+                </details>
+            </div>`;
+            ORDERARRAY.shift();
+        }
+    }
+    historyCheckPre();
+    </script>
+    
+</body>
+</html>
